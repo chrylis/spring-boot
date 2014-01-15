@@ -414,27 +414,28 @@ public class SpringCli {
 	 * @param args CLI arguments
 	 */
 	public static void main(String... args) {
-		String[] init = new String[1];
-		int index = 0;
-		String arg = args[0];
-		if (arg.startsWith("--init")) {
-			if (arg.contains("=") || args.length < 2) {
-				init[0] = arg;
-				index = 1;
+		String[] init = new String[0];
+
+		if (args.length > 0) {
+			int index = 0;
+			String arg = args[0];
+			if (arg.startsWith("--init")) {
+				if (arg.contains("=") || args.length < 2) {
+					init = new String[] { arg };
+					index = 1;
+				}
+				else {
+					init = new String[] { arg + "=" + args[1] };
+					index = 2;
+				}
 			}
-			else {
-				init[0] = arg + "=" + args[1];
-				index = 2;
+			if (index > 0) {
+				String[] newargs = new String[args.length - index];
+				System.arraycopy(args, index, newargs, 0, newargs.length);
+				args = newargs;
 			}
 		}
-		if (index > 0) {
-			String[] newargs = new String[args.length - index];
-			System.arraycopy(args, index, newargs, 0, newargs.length);
-			args = newargs;
-		}
-		else {
-			init = new String[0];
-		}
+
 		int exitCode = new SpringCli(init).runAndHandleErrors(args);
 		if (exitCode != 0) {
 			System.exit(exitCode);
